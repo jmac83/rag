@@ -15,7 +15,3 @@ output "storage_account_primary_access_key" {
 output "uploads_container_name" {
   value = azurerm_storage_container.uploads_container.name
 }
-
-output "functions_container_name" {
-  value = azurerm_storage_container.functions_container.name
-}

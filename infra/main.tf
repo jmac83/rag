@@ -1,4 +1,3 @@
-# Configure the Azure provider
 terraform {
   required_providers {
     azurerm = {
@@ -56,29 +55,29 @@ module "storage_account" {
   }
 }
 
-# module "ai_search" {
-#   source = "./modules/ai_search"
+ module "ai_search" {
+   source = "./modules/ai_search"
 
-#   resource_group_name = azurerm_resource_group.rg.name
-#   location            = azurerm_resource_group.rg.location
+   resource_group_name = azurerm_resource_group.rg.name
+   location            = azurerm_resource_group.rg.location
 
-#   providers = {
-#     azurerm = azurerm
-#     random = random
-#   }
-# }
+   providers = {
+     azurerm = azurerm
+     random = random
+   }
+ }
 
-# module "open_ai" {
-#   source = "./modules/open_ai"
+ module "open_ai" {
+   source = "./modules/open_ai"
 
-#   resource_group_id   = azurerm_resource_group.rg.id
-#   location            = azurerm_resource_group.rg.location
+   resource_group_id   = azurerm_resource_group.rg.id
+   location            = azurerm_resource_group.rg.location
 
-#   providers = {
-#     azurerm = azurerm
-#     random = random
-#   }
-# }
+   providers = {
+     azurerm = azurerm
+     random = random
+   }
+ }
 
 module "function_app" {
   source = "./modules/functions/"
