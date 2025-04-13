@@ -82,14 +82,11 @@ module "storage_account" {
 
 module "function_app" {
   source = "./modules/functions/"
-  function_code_directory = "${path.module}/../index-function/"
-
   resource_group_name   = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
-  storage_account_access_key = module.storage_account.storage_account_primary_access_key
+
+  function_code_directory = "${path.module}/../index-function/"
   storage_account_connection_string = module.storage_account.storage_account_primary_connection_string
-  storage_account_name = module.storage_account.storage_account_name 
-  functions_container_name = module.storage_account.functions_container_name
   uploads_container_name = module.storage_account.uploads_container_name
 
   providers = {

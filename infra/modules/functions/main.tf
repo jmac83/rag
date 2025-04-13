@@ -44,17 +44,24 @@ resource "azurerm_storage_account" "storage_account" {
   account_replication_type = "LRS"
 }
 
+resource "azurerm_storage_container" "functions_container" {
+  name                  = "functions"
+  storage_account_name  = azurerm_storage_account.storage_account.name
+  container_access_type = "private"
+  depends_on = [azurerm_storage_account.storage_account]
+}
+
 resource "azurerm_storage_blob" "function_blob" {
   name                   = "index_function_app_code.zip"
-  storage_account_name   = var.storage_account_name
-  storage_container_name = var.functions_container_name 
+  storage_account_name   = azurerm_storage_account.storage_account.name
+  storage_container_name = azurerm_storage_container.functions_container.name
   type                   = "Block"
   source                 = data.archive_file.function_app_zip.output_path
 }
 
 
 data "azurerm_storage_account_sas" "function_sas" {
-  connection_string = var.storage_account_connection_string
+  connection_string = azurerm_storage_account.storage_account.primary_connection_string
   https_only        = true
 
   resource_types {
@@ -117,25 +124,22 @@ resource "azurerm_application_insights" "function_insights" {
   workspace_id = azurerm_log_analytics_workspace.workspace.id
 }
 
-resource "azurerm_linux_function_app" "example" {
+resource "azurerm_linux_function_app" "index_function" {
   name                       = "index-function-app"
   location                   = var.location
   resource_group_name        = var.resource_group_name
-
-  storage_account_name       = var.storage_account_name
-  storage_account_access_key = var.storage_account_access_key
   service_plan_id            = azurerm_service_plan.function_plan.id
+  storage_account_name       = azurerm_storage_account.storage_account.name
+  storage_account_access_key = azurerm_storage_account.storage_account.primary_access_key
+
   app_settings = {
     FUNCTIONS_WORKER_RUNTIME = "python"
-    WEBSITE_RUN_FROM_PACKAGE = "https://${var.storage_account_name}.blob.core.windows.net/${var.functions_container_name}/${azurerm_storage_blob.function_blob.name}?${data.azurerm_storage_account_sas.function_sas.sas}"
+    WEBSITE_RUN_FROM_PACKAGE = "https://${azurerm_storage_account.storage_account.name}.blob.core.windows.net/${azurerm_storage_container.functions_container.name}/${azurerm_storage_blob.function_blob.name}?${data.azurerm_storage_account_sas.function_sas.sas}"
     APPINSIGHTS_INSTRUMENTATIONKEY       = azurerm_application_insights.function_insights.instrumentation_key
     APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.function_insights.connection_string
-    AZURE_STORAGE_CONNECTION_STRING = var.storage_account_connection_string
-    "AzureWebJobsStorage": var.storage_account_connection_string
-
-    "AzureWebJobsStorageType": "Files"
-    BLOB_PATH = "${var.uploads_container_name}/{name}"
-    STORAGE_CONNECTION_STRING = var.storage_account_connection_string
+    
+    UPLOAD_BLOB_PATH = "${var.uploads_container_name}/{name}"
+    UPLOAD_STORAGE_CONNECTION_STRING = var.storage_account_connection_string
   }
   identity {
     type = "SystemAssigned"
@@ -145,5 +149,11 @@ resource "azurerm_linux_function_app" "example" {
        python_version = "3.9"
     }
     always_on = true
+    cors {
+      allowed_origins     = [
+        "https://portal.azure.com"
+      ]
+      support_credentials = true 
+    }
   }
 }
