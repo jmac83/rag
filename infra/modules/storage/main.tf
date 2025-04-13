@@ -41,9 +41,3 @@ resource "azurerm_storage_container" "uploads_container" {
   depends_on = [azurerm_storage_account.storage_account]
 }
 
-resource "azurerm_storage_container" "functions_container" {
-  name                  = "functions"
-  storage_account_name  = azurerm_storage_account.storage_account.name
-  container_access_type = "private"
-  depends_on = [azurerm_storage_account.storage_account]
-}
