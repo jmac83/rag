@@ -172,3 +172,57 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+# Ignore the .terraform directory, which contains downloaded provider plugins
+# and modules. This should be generated locally by running `terraform init`.
+.terraform/
+
+# Ignore crash log files
+crash.log
+crash.*.log
+
+# Ignore Terraform Cloud/Enterprise override files
+# These are meant for local overrides and should not be committed.
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ignore CLI configuration files
+# These are local user configurations.
+.terraformrc
+terraform.rc
+
+# Sensitive Variable Files
+# Ignore .tfvars files, which often contain sensitive credentials or environment-specific
+# values. Instead, commit a .tfvars.example file with placeholder values.
+*.tfvars
+*.tfvars.json
+*.auto.tfvars
+*.auto.tfvars.json
+# Consider adding specific sensitive file names if you use them, e.g.:
+# secrets.tfvars
+
+# Terragrunt Cache
+# If using Terragrunt, ignore its cache directory.
+.terragrunt-cache/
+
+# Common OS/Editor Files
+# Ignore OS-generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Ignore common editor temporary files
+*~
+*.swp
+*.swo
+
+# Ignore common IDE/Editor directories (optional, adjust as needed)
+.vscode/
+.idea/
+
+# --- IMPORTANT EXCEPTION ---
+# DO NOT ignore the Terraform lock file. This file ensures consistent provider
+# versions across runs and different machines/users. It SHOULD be committed.
+!/.terraform.lock.hcl
+
