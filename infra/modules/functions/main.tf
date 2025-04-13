@@ -52,30 +52,18 @@ resource "azurerm_storage_container" "functions_container" {
 }
 
 resource "azurerm_storage_blob" "function_blob" {
-  name                   = "index_function_app_code.zip"
+  name                   = "index_function_app_code_${timestamp()}.zip"
   storage_account_name   = azurerm_storage_account.storage_account.name
   storage_container_name = azurerm_storage_container.functions_container.name
   type                   = "Block"
   source                 = data.archive_file.function_app_zip.output_path
+  content_md5            = data.archive_file.function_app_zip.output_md5
 }
 
-
-data "azurerm_storage_account_sas" "function_sas" {
+data "azurerm_storage_account_blob_container_sas" "function_sas" {
   connection_string = azurerm_storage_account.storage_account.primary_connection_string
   https_only        = true
-
-  resource_types {
-    service   = true
-    container = true
-    object    = true
-  }
-
-  services {
-    blob  = true
-    queue = false
-    table = false
-    file  = false
-  }
+  container_name = azurerm_storage_container.functions_container.name
 
   start  = "2025-01-01T00:00:00Z"
   expiry = "2030-01-01T00:00:00Z"
@@ -87,10 +75,6 @@ data "azurerm_storage_account_sas" "function_sas" {
     list    = false
     add     = false
     create  = false
-    update  = false
-    process = false
-    tag     = false
-    filter  = false
   }
 }
 
@@ -134,12 +118,14 @@ resource "azurerm_linux_function_app" "index_function" {
 
   app_settings = {
     FUNCTIONS_WORKER_RUNTIME = "python"
-    WEBSITE_RUN_FROM_PACKAGE = "https://${azurerm_storage_account.storage_account.name}.blob.core.windows.net/${azurerm_storage_container.functions_container.name}/${azurerm_storage_blob.function_blob.name}?${data.azurerm_storage_account_sas.function_sas.sas}"
+    WEBSITE_RUN_FROM_PACKAGE = "https://${azurerm_storage_account.storage_account.name}.blob.core.windows.net/${azurerm_storage_container.functions_container.name}/${azurerm_storage_blob.function_blob.name}?${data.azurerm_storage_account_blob_container_sas.function_sas.sas}"
     APPINSIGHTS_INSTRUMENTATIONKEY       = azurerm_application_insights.function_insights.instrumentation_key
     APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.function_insights.connection_string
     
     UPLOAD_BLOB_PATH = "${var.uploads_container_name}/{name}"
     UPLOAD_STORAGE_CONNECTION_STRING = var.storage_account_connection_string
+
+    "HASH" = data.archive_file.function_app_zip.output_base64sha256
   }
   identity {
     type = "SystemAssigned"

@@ -22,6 +22,5 @@ def MyBlobTriggerFunction(myblob: func.InputStream):
             logging.info(f"Chunk ID: {chunk['id']}")
             logging.info(f"Chunk Content: {chunk['content'][:50]}...")
 
-
     else:
         logging.error(f"Blob is not a PDF file: {myblob.name}")
