@@ -1,0 +1,100 @@
+# Configure the Azure provider
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 4.0.1"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.1"
+    }
+    azapi = {
+      source  = "azure/azapi"
+      version = "~> 1.0.0"
+    }
+ }
+
+  required_version = ">= 1.1.0"
+}
+
+provider "azapi" {
+}
+
+provider "azurerm" {
+  subscription_id="48bf2767-38ef-4cd4-8839-bfd0e99339d5"
+  features {
+    resource_group {
+      prevent_deletion_if_contains_resources = false
+    }
+  }
+}
+
+provider "random" {}
+
+
+resource "random_pet" "rg_name" {
+  prefix    = "rg-aifitcoach"
+  separator = "-"
+  length    = 2
+}
+
+resource "azurerm_resource_group" "rg" {
+  name     = random_pet.rg_name.id
+  location = "westus"
+}
+
+module "storage_account" {
+  source = "./modules/storage"
+
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+
+  providers = {
+    azurerm = azurerm
+    random = random
+  }
+}
+
+# module "ai_search" {
+#   source = "./modules/ai_search"
+
+#   resource_group_name = azurerm_resource_group.rg.name
+#   location            = azurerm_resource_group.rg.location
+
+#   providers = {
+#     azurerm = azurerm
+#     random = random
+#   }
+# }
+
+# module "open_ai" {
+#   source = "./modules/open_ai"
+
+#   resource_group_id   = azurerm_resource_group.rg.id
+#   location            = azurerm_resource_group.rg.location
+
+#   providers = {
+#     azurerm = azurerm
+#     random = random
+#   }
+# }
+
+module "function_app" {
+  source = "./modules/functions/"
+  function_code_directory = "${path.module}/../index-function/"
+
+  resource_group_name   = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  storage_account_access_key = module.storage_account.storage_account_primary_access_key
+  storage_account_connection_string = module.storage_account.storage_account_primary_connection_string
+  storage_account_name = module.storage_account.storage_account_name 
+  functions_container_name = module.storage_account.functions_container_name
+  uploads_container_name = module.storage_account.uploads_container_name
+
+  providers = {
+    azurerm = azurerm
+    random = random
+  }
+
+}
