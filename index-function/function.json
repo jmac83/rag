@@ -1,0 +1,13 @@
+{
+  "scriptFile": "__init__.py",
+  "bindings": [
+    {
+      "name": "myblob",
+      "type": "blobTrigger",
+      "direction": "in",
+      "path": "input-container/{name}",
+      // This name MUST match an App Setting in your Function App
+      "connection": "BlobTriggerStorageConnectionString"
+    }
+  ]
+}
