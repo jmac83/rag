@@ -16,6 +16,7 @@ def MyBlobTriggerFunction(myblob: func.InputStream):
 
     if myblob.name.endswith(".pdf"):
         logging.info(f"Processing PDF blob: {myblob.name}")
+
         pdf_processor = PDFProcessor()
         chunk_records = pdf_processor.process_pdf_to_chunks(io.BytesIO(myblob.read()))
         for chunk in chunk_records:

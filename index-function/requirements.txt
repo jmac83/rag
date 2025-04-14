@@ -3,5 +3,6 @@
 # Manually managing azure-functions-worker may cause unexpected issues
 
 azure-functions
-PyMuPDF==1.22.3
 transformers 
+#PyMuPDF
+pypdf

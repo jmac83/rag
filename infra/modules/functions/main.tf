@@ -51,15 +51,6 @@ resource "azurerm_storage_container" "functions_container" {
   depends_on = [azurerm_storage_account.storage_account]
 }
 
-resource "azurerm_storage_blob" "function_blob" {
-  name                   = "index_function_app_code_${timestamp()}.zip"
-  storage_account_name   = azurerm_storage_account.storage_account.name
-  storage_container_name = azurerm_storage_container.functions_container.name
-  type                   = "Block"
-  source                 = data.archive_file.function_app_zip.output_path
-  content_md5            = data.archive_file.function_app_zip.output_md5
-}
-
 data "azurerm_storage_account_blob_container_sas" "function_sas" {
   connection_string = azurerm_storage_account.storage_account.primary_connection_string
   https_only        = true
@@ -118,7 +109,6 @@ resource "azurerm_linux_function_app" "index_function" {
 
   app_settings = {
     FUNCTIONS_WORKER_RUNTIME = "python"
-    WEBSITE_RUN_FROM_PACKAGE = "https://${azurerm_storage_account.storage_account.name}.blob.core.windows.net/${azurerm_storage_container.functions_container.name}/${azurerm_storage_blob.function_blob.name}?${data.azurerm_storage_account_blob_container_sas.function_sas.sas}"
     APPINSIGHTS_INSTRUMENTATIONKEY       = azurerm_application_insights.function_insights.instrumentation_key
     APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.function_insights.connection_string
     
@@ -126,6 +116,7 @@ resource "azurerm_linux_function_app" "index_function" {
     UPLOAD_STORAGE_CONNECTION_STRING = var.storage_account_connection_string
 
     "HASH" = data.archive_file.function_app_zip.output_base64sha256
+    "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
   }
   identity {
     type = "SystemAssigned"
@@ -142,4 +133,22 @@ resource "azurerm_linux_function_app" "index_function" {
       support_credentials = true 
     }
   }
+}
+
+resource "null_resource" "function_app_deploy" {
+  triggers = {
+    zip_hash = data.archive_file.function_app_zip.output_base64sha256
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      az functionapp deployment source config-zip \
+        --resource-group ${azurerm_linux_function_app.index_function.resource_group_name} \
+        --name ${azurerm_linux_function_app.index_function.name} \
+        --src "${data.archive_file.function_app_zip.output_path}" \
+        --build-remote true \
+        --timeout 900
+    EOT
+  }
+  depends_on = [azurerm_linux_function_app.index_function]
 }
