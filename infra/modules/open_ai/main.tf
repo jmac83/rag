@@ -39,6 +39,18 @@ JSON
   schema_validation_enabled = false
 }
 
+resource "azapi_resource_action" "openai_keys" {
+  type                   = "Microsoft.CognitiveServices/accounts@2021-04-30"
+  resource_id            = azapi_resource.openai.id
+  action                 = "listKeys"
+  response_export_values = ["*"]
+}
+
+locals {
+  openai_endpoint = "https://${azapi_resource.openai.name}.openai.azure.com/"
+  openai_key      = jsondecode(azapi_resource_action.openai_keys.output).key1
+}
+
 resource "azurerm_cognitive_deployment" "ada_embedding" {
   name                 = "text-embedding-ada-002"
   cognitive_account_id = azapi_resource.openai.id 

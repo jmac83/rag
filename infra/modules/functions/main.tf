@@ -117,6 +117,8 @@ resource "azurerm_linux_function_app" "index_function" {
 
     "HASH" = data.archive_file.function_app_zip.output_base64sha256
     "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
+    "OPEN_AI_API_KEY" = var.open_ai_api_key
+    "OPEN_AI_ENDPOINT" = var.open_ai_endpoint
   }
   identity {
     type = "SystemAssigned"

@@ -17,3 +17,11 @@ variable "location" {
 variable "uploads_container_name" {
   type = string
 }
+
+variable "open_ai_api_key" {
+  type = string
+}
+
+variable "open_ai_endpoint" {
+  type        = string
+}

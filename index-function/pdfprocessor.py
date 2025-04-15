@@ -3,8 +3,8 @@ import io
 from pypdf import PdfReader
 from transformers import GPT2TokenizerFast
 
-CHUNK_SIZE = 500
-CHUNK_OVERLAP = 50
+CHUNK_SIZE = 1000
+CHUNK_OVERLAP = 100
 
 class PDFProcessor:
     def __init__(

@@ -21,7 +21,7 @@ provider "azapi" {
 }
 
 provider "azurerm" {
-  subscription_id="48bf2767-38ef-4cd4-8839-bfd0e99339d5"
+  subscription_id = var.subscription_id
   features {
     resource_group {
       prevent_deletion_if_contains_resources = false
@@ -87,10 +87,11 @@ module "function_app" {
   function_code_directory = "${path.module}/../index-function/"
   storage_account_connection_string = module.storage_account.storage_account_primary_connection_string
   uploads_container_name = module.storage_account.uploads_container_name
+  open_ai_api_key = module.open_ai.open_ai_api_key
+  open_ai_endpoint = module.open_ai.open_ai_endpoint
 
   providers = {
     azurerm = azurerm
     random = random
   }
-
 }
