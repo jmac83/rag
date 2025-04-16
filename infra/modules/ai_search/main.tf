@@ -1,4 +1,3 @@
-# Configure the Azure provider
 terraform {
   required_providers {
     azurerm = {
@@ -12,6 +11,10 @@ terraform {
     restapi = {
       source  = "Mastercard/restapi"
       version = "~> 1.18.2"
+    }
+    null = {
+      source  = "hashicorp/null"
+      version = ">= 3.0"
     }
   }
 }
@@ -38,23 +41,19 @@ resource "azurerm_search_service" "search_service" {
   }
 }
 
+resource "null_resource" "create_search_index_via_post" {
+  
+  provisioner "local-exec" {
+    command = <<-EOT
+      # Inlined API version string here
+      curl -f -v -X POST "https://${random_pet.search_service_name.id}.search.windows.net/indexes?api-version=2023-10-01-Preview" \
+      -H "Content-Type: application/json" \
+      -H "api-key: ${azurerm_search_service.search_service.primary_key}" \
+      -d "@${path.module}/rag-index.json"
+    EOT
+  }
 
-#provider "restapi" {
-#  uri = "https://${random_pet.search_service_name.id}.search.windows.net"
-#  #uri = "http://google.com"
-#  headers = {
-#    "Content-Type" = "application/json"
-#    "api-key"      = sensitive(azurerm_search_service.search_service.primary_key)
-#  }
-#  write_returns_object = true
-#  debug                = true
-#}
-#
-#resource "restapi_object" "search_index" {
-#  path         = "/indexs"
-#  query_string = "api-version=2023-10-01-Preview"
-#  data         = file("${path.module}/rag-index.json")
-#  id_attribute = "name"
-#  depends_on   = [azurerm_search_service.search_service]
-#}
-
+  depends_on = [
+    azurerm_search_service.search_service
+  ]
+}
