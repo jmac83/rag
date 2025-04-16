@@ -36,6 +36,11 @@ resource "random_pet" "storage_account_name" {
   length    = 1
 }
 
+resource "random_pet" "index_function_name" {
+  prefix    = "index-function" # Prefix for Search service
+  length    = 2
+}
+
 resource "azurerm_storage_account" "storage_account" {
   name                     = random_pet.storage_account_name.id 
   resource_group_name      = var.resource_group_name
@@ -100,7 +105,7 @@ resource "azurerm_application_insights" "function_insights" {
 }
 
 resource "azurerm_linux_function_app" "index_function" {
-  name                       = "index-function-app"
+  name                       = random_pet.index_function_name.id 
   location                   = var.location
   resource_group_name        = var.resource_group_name
   service_plan_id            = azurerm_service_plan.function_plan.id
