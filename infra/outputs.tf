@@ -11,4 +11,21 @@ output "resource_group_name" {
  output "search_api_url" {
    value = module.ai_search.search_api_url
  }
+ output "openai_api_key" {
+   value = module.open_ai.open_ai_api_key
+   sensitive = true
+ }
 
+ output "open_ai_endpoint_url" {
+   value = module.open_ai.open_ai_endpoint
+ } 
+
+output "upload_storage_account_connection_string" {
+  value = module.storage_account.storage_account_primary_connection_string
+  sensitive = true
+}
+
+output "function_storage_account_connection_string" {
+  value = module.function_app.function_storage_account_connection_string
+  sensitive = true
+}

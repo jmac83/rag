@@ -37,6 +37,7 @@ resource "azapi_resource" "openai" {
 }
 JSON
   schema_validation_enabled = false
+  response_export_values = ["properties.endpoint"]
 }
 
 resource "azapi_resource_action" "openai_keys" {
@@ -47,7 +48,7 @@ resource "azapi_resource_action" "openai_keys" {
 }
 
 locals {
-  openai_endpoint = "https://${azapi_resource.openai.name}.openai.azure.com/"
+  openai_endpoint = jsondecode(azapi_resource.openai.output).properties.endpoint
   openai_key      = jsondecode(azapi_resource_action.openai_keys.output).key1
 }
 
@@ -62,6 +63,7 @@ resource "azurerm_cognitive_deployment" "ada_embedding" {
   }
   sku {
     name = "Standard"
+    capacity = 300
   }
 
   depends_on = [
