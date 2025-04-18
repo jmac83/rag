@@ -89,6 +89,8 @@ module "function_app" {
   uploads_container_name = module.storage_account.uploads_container_name
   open_ai_api_key = module.open_ai.open_ai_api_key
   open_ai_endpoint = module.open_ai.open_ai_endpoint
+  ai_search_url = module.ai_search.ai_search_url
+  ai_search_key = module.ai_search.ai_search_key
 
   providers = {
     azurerm = azurerm

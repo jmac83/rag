@@ -124,6 +124,8 @@ resource "azurerm_linux_function_app" "index_function" {
     "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
     "AZURE_OPENAI_API_KEY=" = var.open_ai_api_key
     "AZURE_OPENAI_ENDPOINT" = var.open_ai_endpoint
+    "AZURE_SEARCH_API_URL" = var.ai_search_url
+    "AZURE_SEARCH_API_KEY" = var.ai_search_key
   }
   identity {
     type = "SystemAssigned"

@@ -3,10 +3,11 @@ import io
 from pypdf import PdfReader
 from transformers import GPT2TokenizerFast
 
-CHUNK_SIZE = 1000
-CHUNK_OVERLAP = 100
-
 class PDFProcessor:
+
+    CHUNK_SIZE = 500
+    CHUNK_OVERLAP = 50
+
     def __init__(
             self,
         ):
@@ -24,16 +25,16 @@ class PDFProcessor:
                 print(f"Error extracting text from page {page_num + 1}: {e}")
         return full_text
 
-    def __chunk_text(self, text, chunk_size=CHUNK_SIZE, overlap=CHUNK_OVERLAP):
+    def __chunk_text(self, text):
         tokens = self.tokenizer.encode(text)
         chunks = []
         start = 0
         while start < len(tokens):
-            end = start + chunk_size
+            end = start + self.CHUNK_SIZE
             chunk_tokens = tokens[start:end]
             chunk_text = self.tokenizer.decode(chunk_tokens)
             chunks.append(chunk_text.strip())
-            start += chunk_size - overlap
+            start += self.CHUNK_SIZE - self.CHUNK_OVERLAP
         return chunks
 
     def process_pdf_to_chunks(self, pdf_stream : io.BytesIO):

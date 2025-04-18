@@ -1,12 +1,11 @@
 import azure.functions as func
-import datetime
-import json
 import logging
 import os
 import io
 from pdfprocessor import PDFProcessor
 from embeddingservice import EmbeddingService
 from openai import AzureOpenAI
+from azuresearchindexer import AzureSearchIndexer
 
 app = func.FunctionApp()
 
@@ -20,19 +19,27 @@ def IndexPdfFunction(myblob: func.InputStream):
         logging.info(f"Processing PDF blob: {myblob.name}")
 
         pdf_processor = PDFProcessor()
-        
-        openai_client = AzureOpenAI(
-            api_version="2023-05-15",
-            azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT")
+        embedding_service = EmbeddingService(
+            AzureOpenAI(
+                api_version="2023-05-15",
+                azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT")
+            )
         )
-        embedding_service = EmbeddingService(openai_client)
-                
+        azure_search_indexer = AzureSearchIndexer(
+            search_api_url=os.getenv("AZURE_SEARCH_API_URL"),
+            search_api_key=os.getenv("AZURE_SEARCH_API_KEY")
+        )
+
         chunk_records = pdf_processor.process_pdf_to_chunks(io.BytesIO(myblob.read()))
         for chunk in chunk_records:
             logging.info(f"Chunk ID: {chunk['id']}")
             logging.info(f"Chunk Content: {chunk['content'][:50]}...")
 
             embedding = embedding_service.get_embedding(chunk['content'])
-            logging.info(f"Chunk Metadata: {embedding}")
+            logging.info(f"Embedding: {embedding[:10]}...")
+
+            logging.info("Posting chunk to Azure Search Indexer")
+            azure_search_indexer.index_document(chunk, embedding)
+        logging.info(f"Finished processing PDF blob: {myblob.name}")
     else:
         logging.error(f"Blob is not a PDF file: {myblob.name}")
