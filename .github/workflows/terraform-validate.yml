@@ -1,0 +1,16 @@
+jobs:  
+  validate-terraform:  
+    name: Validate Terraform Config  
+    runs-on: ubuntu-latest  
+    steps:  
+      - name: Checkout Code  
+        uses: actions/checkout@v4  
+
+      - name: Setup Terraform  
+        uses: hashicorp/setup-terraform@v3  
+
+      - name: Terraform Init & Validate  
+        run: |  
+          cd infra/  # Navigate to your Terraform directory  
+          terraform init  
+          terraform validate 
