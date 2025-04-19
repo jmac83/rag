@@ -1,3 +1,4 @@
+name: Validate Terraform Configuration
 on:
   push:
     branches: [ main ]
