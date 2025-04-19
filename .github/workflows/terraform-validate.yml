@@ -1,3 +1,6 @@
+on:
+  push:
+    branches: [ main ]
 jobs:  
   validate-terraform:  
     name: Validate Terraform Config  
