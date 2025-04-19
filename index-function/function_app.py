@@ -2,10 +2,11 @@ import azure.functions as func
 import logging
 import os
 import io
-from pdfprocessor import PDFProcessor
-from embeddingservice import EmbeddingService
+from src.pdfprocessor import PDFProcessor
+from src.embeddingservice import EmbeddingService
+from src.azuresearchindexer import AzureSearchIndexer
 from openai import AzureOpenAI
-from azuresearchindexer import AzureSearchIndexer
+from transformers import GPT2TokenizerFast
 
 app = func.FunctionApp()
 
@@ -18,7 +19,10 @@ def IndexPdfFunction(myblob: func.InputStream):
     if myblob.name.endswith(".pdf"):
         logging.info(f"Processing PDF blob: {myblob.name}")
 
-        pdf_processor = PDFProcessor()
+        pdf_processor = PDFProcessor(
+            GPT2TokenizerFast.from_pretrained("gpt2")
+        )
+
         embedding_service = EmbeddingService(
             AzureOpenAI(
                 api_version="2023-05-15",

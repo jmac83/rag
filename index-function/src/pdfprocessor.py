@@ -10,8 +10,9 @@ class PDFProcessor:
 
     def __init__(
             self,
+            tokenizer : GPT2TokenizerFast
         ):
-        self.tokenizer = GPT2TokenizerFast.from_pretrained("gpt2")
+        self.tokenizer = tokenizer
 
     def __extract_text_from_pdf(self, pdf_stream: io.BytesIO):
         reader = PdfReader(pdf_stream)
