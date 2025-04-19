@@ -61,8 +61,6 @@ class TestAzureSearchIndexer:
         )
 
         # Act
-        # Pass a copy if you want to ensure the original input_chunk isn't modified
-        # (though this method seems to modify it in place)
         indexer.index_document(input_chunk, input_embedding)
 
         # Assert
