@@ -14,6 +14,6 @@ jobs:
 
       - name: Terraform Init & Validate  
         run: |  
-          cd infra/  # Navigate to your Terraform directory  
+          cd infra/
           terraform init  
           terraform validate 
