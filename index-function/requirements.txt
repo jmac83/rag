@@ -4,6 +4,5 @@
 
 azure-functions
 transformers 
-#PyMuPDF
-pypdf
+PyMuPDF
 openai

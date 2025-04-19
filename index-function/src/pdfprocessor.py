@@ -1,6 +1,6 @@
 import uuid
 import io
-from pypdf import PdfReader
+import fitz
 from transformers import GPT2TokenizerFast
 
 class PDFProcessor:
@@ -14,16 +14,13 @@ class PDFProcessor:
         ):
         self.tokenizer = tokenizer
 
-    def __extract_text_from_pdf(self, pdf_stream: io.BytesIO):
-        reader = PdfReader(pdf_stream)
+    def __extract_text_from_pdf(pdf_stream : io.BytesIO):
+        doc = fitz.open(stream=pdf_stream.getvalue(), filetype="pdf")
         full_text = []
-        for page_num, page in enumerate(reader.pages):
-            try:
-                text = page.extract_text()
-                if text:  
-                    full_text.append((page_num + 1, text.strip()))
-            except Exception as e:
-                print(f"Error extracting text from page {page_num + 1}: {e}")
+        for page_num, page in enumerate(doc):
+            text = page.get_text()
+            if text:
+                full_text.append((page_num + 1, text.strip()))
         return full_text
 
     def __chunk_text(self, text):

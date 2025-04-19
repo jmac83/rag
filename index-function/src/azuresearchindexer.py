@@ -1,5 +1,6 @@
 import json
 import requests
+import logging
 
 class AzureSearchIndexer:
     INDEX_NAME = "rag-index"
@@ -21,7 +22,7 @@ class AzureSearchIndexer:
             chunk["metadata"] = json.dumps(chunk["metadata"]) 
         
         payload = {"value": [chunk]}
-        print(payload)
+        logging.debug(payload)
         
         headers = {
             "Content-Type": "application/json",
@@ -33,5 +34,5 @@ class AzureSearchIndexer:
             data=json.dumps(payload)
         )
 
-        print("Status Code:", response.status_code)
-        print("Response:", response.text)
+        logging.info(f"Status Code: {response.status_code}")
+        logging.info(f"Response: {response.text}")
