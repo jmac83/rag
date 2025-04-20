@@ -47,7 +47,7 @@ resource "azurerm_service_plan" "chat_ui_plan" {
   resource_group_name = var.resource_group_name
   location            = var.location
   os_type             = "Linux"
-  sku_name            = "S1" 
+  sku_name            = "P1v3" 
 }
 
 resource "azurerm_linux_web_app" "chat_web_ui_app" {

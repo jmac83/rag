@@ -1,4 +1,3 @@
-# chat-ui/app.py
 import streamlit as st
 import os
 import logging
@@ -51,7 +50,6 @@ def search_documents(query_text: str, top_k: int = 3):
         return []
     try:
         vector = get_embedding(query_text)
-        print(vector)
         if not vector:
             return []
         
