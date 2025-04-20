@@ -43,6 +43,18 @@ resource "azurerm_resource_group" "rg" {
   location = "westus"
 }
 
+module "monitor" {
+  source = "./modules/monitor"
+
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+
+  providers = {
+    azurerm = azurerm
+    random = random
+  }
+}
+
 module "storage_account" {
   source = "./modules/storage"
 
@@ -91,9 +103,30 @@ module "function_app" {
   open_ai_endpoint = module.open_ai.open_ai_endpoint
   ai_search_url = module.ai_search.search_api_url
   ai_search_key = module.ai_search.search_api_key
+  log_analytics_workspace_id = module.monitor.log_analytics_workspace_id
 
   providers = {
     azurerm = azurerm
     random = random
   }
+}
+
+module "web_ui_app" {
+ source = "./modules/web_ui/"
+ resource_group_name   = azurerm_resource_group.rg.name
+ location            = azurerm_resource_group.rg.location
+
+ web_ui_code_directory = "${path.module}/../chat-ui/"
+ #storage_account_connection_string = module.storage_account.storage_account_primary_connection_string
+ #uploads_container_name = module.storage_account.uploads_container_name
+ open_ai_api_key = module.open_ai.open_ai_api_key
+ open_ai_endpoint = module.open_ai.open_ai_endpoint
+ ai_search_url = module.ai_search.search_api_url
+ ai_search_key = module.ai_search.search_api_key
+ log_analytics_workspace_id = module.monitor.log_analytics_workspace_id
+
+ providers = {
+   azurerm = azurerm
+   random = random
+ }
 }

@@ -39,7 +39,7 @@ resource "random_pet" "storage_account_name" {
 }
 
 resource "random_pet" "index_function_name" {
-  prefix    = "index-function" # Prefix for Search service
+  prefix    = "index-function" 
   length    = 2
 }
 
@@ -51,31 +51,6 @@ resource "azurerm_storage_account" "storage_account" {
   account_replication_type = "LRS"
 }
 
-resource "azurerm_storage_container" "functions_container" {
-  name                  = "functions"
-  storage_account_name  = azurerm_storage_account.storage_account.name
-  container_access_type = "private"
-  depends_on = [azurerm_storage_account.storage_account]
-}
-
-data "azurerm_storage_account_blob_container_sas" "function_sas" {
-  connection_string = azurerm_storage_account.storage_account.primary_connection_string
-  https_only        = true
-  container_name = azurerm_storage_container.functions_container.name
-
-  start  = "2025-01-01T00:00:00Z"
-  expiry = "2030-01-01T00:00:00Z"
-
-  permissions {
-    read    = true
-    write   = false
-    delete  = false
-    list    = false
-    add     = false
-    create  = false
-  }
-}
-
 resource "azurerm_service_plan" "function_plan" {
   name                = "index-function-plan"
   location            = var.location
@@ -84,26 +59,13 @@ resource "azurerm_service_plan" "function_plan" {
   sku_name            = "EP1"
 }
 
-resource "random_pet" "workspace_name" {
-  prefix    = "la-workspace"
-  length    = 2
-}
-
-resource "azurerm_log_analytics_workspace" "workspace" {
-  name                = random_pet.workspace_name.id
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  sku                 = "PerGB2018"
-  retention_in_days   = 30
-}
-
 resource "azurerm_application_insights" "function_insights" {
   name                = "index-function-insights"
   location            = var.location
   resource_group_name = var.resource_group_name
   application_type    = "web"
   retention_in_days   = 30
-  workspace_id = azurerm_log_analytics_workspace.workspace.id
+  workspace_id = var.log_analytics_workspace_id
 }
 
 resource "azurerm_linux_function_app" "index_function" {
