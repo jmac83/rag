@@ -57,7 +57,7 @@ resource "azurerm_linux_web_app" "chat_web_ui_app" {
   service_plan_id     = azurerm_service_plan.chat_ui_plan.id
 
   site_config {
-    always_on         = false # Set to true for Basic tier and above if needed
+    always_on         = true
     application_stack {
        python_version = "3.9"
     }
@@ -73,7 +73,7 @@ resource "azurerm_linux_web_app" "chat_web_ui_app" {
     "AZURE_OPENAI_ENDPOINT" = var.open_ai_endpoint
     "AZURE_SEARCH_API_URL" = var.ai_search_url
     "AZURE_SEARCH_API_KEY" = var.ai_search_key
-    "WEBSITES_PORT"                       = "8000" # Tell App Service which internal port Streamlit uses (default 8501, but App Service needs 8000/8080)
+    "WEBSITES_PORT"                       = "8000" 
     
     "APP_ZIP_HASH"         = data.archive_file.web_ui_app_zip.output_base64sha256
     "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"

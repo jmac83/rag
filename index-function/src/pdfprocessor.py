@@ -14,7 +14,7 @@ class PDFProcessor:
         ):
         self.tokenizer = tokenizer
 
-    def __extract_text_from_pdf(pdf_stream : io.BytesIO):
+    def __extract_text_from_pdf(self, pdf_stream : io.BytesIO):
         doc = fitz.open(stream=pdf_stream.getvalue(), filetype="pdf")
         full_text = []
         for page_num, page in enumerate(doc):

@@ -36,8 +36,8 @@ def IndexPdfFunction(myblob: func.InputStream):
 
     if myblob.name.endswith(".pdf"):
 
-        pdf_processor = PDFProcessor(tokenizer=tokenizer)
-        embedding_service = EmbeddingService(openai_client=openai_client)
+        pdf_processor = PDFProcessor(tokenizer)
+        embedding_service = EmbeddingService(openai_client)
         azure_search_indexer = AzureSearchIndexer(
             search_api_url=AZURE_SEARCH_API_URL,
             search_api_key=AZURE_SEARCH_API_KEY
