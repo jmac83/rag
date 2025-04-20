@@ -47,7 +47,7 @@ class TestPDFProcessor:
         dummy_bytes = b"dummy pdf bytes"
         pdf_stream = io.BytesIO(dummy_bytes)
 
-        extracted_data = PDFProcessor._PDFProcessor__extract_text_from_pdf(pdf_stream)
+        extracted_data = PDFProcessor._PDFProcessor__extract_text_from_pdf(self, pdf_stream)
 
         # Assert
         mock_fitz_open.assert_called_once_with(stream=dummy_bytes, filetype="pdf")
