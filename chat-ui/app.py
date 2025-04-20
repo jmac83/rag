@@ -5,28 +5,31 @@ import logging
 from openai import AzureOpenAI
 from azure.search.documents import SearchClient
 from azure.core.credentials import AzureKeyCredential
+import json
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-AZURE_SEARCH_ENDPOINT = os.environ.get("AZURE_SEARCH_ENDPOINT")
-AZURE_SEARCH_KEY = os.environ.get("AZURE_SEARCH_KEY")
-AZURE_SEARCH_INDEX_NAME = os.environ.get("AZURE_SEARCH_INDEX_NAME", "rag-index")
-AZURE_OPENAI_ENDPOINT = os.environ.get("AZURE_OPENAI_ENDPOINT")
-AZURE_OPENAI_KEY = os.environ.get("AZURE_OPENAI_KEY")
-AZURE_OPENAI_CHAT_DEPLOYMENT = os.environ.get("AZURE_OPENAI_CHAT_DEPLOYMENT")
-AZURE_OPENAI_EMBEDDING_DEPLOYMENT = os.environ.get("AZURE_OPENAI_EMBEDDING_DEPLOYMENT")
+AZURE_SEARCH_API_URL = os.environ.get("AZURE_SEARCH_API_URL")
+AZURE_SEARCH_API_KEY = os.environ.get("AZURE_SEARCH_API_KEY")
+AZURE_SEARCH_INDEX_NAME = "rag-index"
 
-search_credential = AzureKeyCredential(AZURE_SEARCH_KEY) if AZURE_SEARCH_KEY else None
-search_client = SearchClient(endpoint=AZURE_SEARCH_ENDPOINT,
+AZURE_OPENAI_ENDPOINT = os.environ.get("AZURE_OPENAI_ENDPOINT")
+AZURE_OPENAI_API_KEY = os.environ.get("AZURE_OPENAI_API_KEY")
+AZURE_OPENAI_CHAT_DEPLOYMENT = "gpt-4o-chat"
+AZURE_OPENAI_EMBEDDING_DEPLOYMENT = "text-embedding-ada-002"
+
+search_credential = AzureKeyCredential(AZURE_SEARCH_API_KEY) if AZURE_SEARCH_API_KEY else None
+search_client = SearchClient(endpoint=AZURE_SEARCH_API_URL,
                              index_name=AZURE_SEARCH_INDEX_NAME,
-                             credential=search_credential) if AZURE_SEARCH_ENDPOINT and search_credential else None
+                             credential=search_credential,
+                             api_version="2023-11-01") if AZURE_SEARCH_API_URL and search_credential else None
 
 openai_client = AzureOpenAI(
     api_version="2023-05-15",
     azure_endpoint=AZURE_OPENAI_ENDPOINT,
-    api_key=AZURE_OPENAI_KEY
-) if AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_KEY else None
+    api_key=AZURE_OPENAI_API_KEY
+) if AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_API_KEY else None
 
 
 def get_embedding(text: str):
@@ -48,12 +51,21 @@ def search_documents(query_text: str, top_k: int = 3):
         return []
     try:
         vector = get_embedding(query_text)
+        print(vector)
         if not vector:
             return []
-
+        
+        vector_as_list = [float(x) for x in vector]
+        
+        vector_query = {
+            "vector": vector_as_list,
+            "k": top_k,
+            "fields": "embedding",
+            "kind": "vector"
+        }
         results = search_client.search(
             search_text=None,
-            vector_queries=[{"vector": vector, "k": top_k, "fields": "embedding"}],
+            vector_queries=[vector_query],
             select=["id", "content", "metadata"],
         )
         return list(results)
@@ -66,7 +78,9 @@ def get_chat_completion(user_query: str, retrieved_docs: list):
     if not openai_client or not AZURE_OPENAI_CHAT_DEPLOYMENT:
         st.error("OpenAI Chat client not configured.")
         return "Error: Chat client not configured."
-
+    print(100*"-")
+    print(retrieved_docs)
+    print(100*"-")
     system_message = """You are an AI assistant helping answer questions based on the provided context documents.
 Answer the user's query using *only* the information found in the context documents below.
 If the context doesn't contain the answer, state that you cannot answer based on the provided information.
@@ -75,7 +89,10 @@ Be concise and helpful. Cite the source page from the metadata if available.
 Context Documents:
 ---
 """
-    context = "\n---\n".join([f"Source Page: {doc.get('metadata', {}).get('source_page', 'N/A')}\nContent: {doc['content']}" for doc in retrieved_docs])
+    context = "\n---\n".join([
+        f"Source Page: {json.loads(doc['metadata']).get('source_page', 'N/A') if isinstance(doc['metadata'], str) else doc.get('metadata', {}).get('source_page', 'N/A')}\nContent: {doc['content']}" 
+        for doc in retrieved_docs
+    ])
     if not retrieved_docs:
         context = "No relevant documents found."
 

@@ -71,3 +71,23 @@ resource "azurerm_cognitive_deployment" "ada_embedding" {
   ]
 }
 
+resource "azurerm_cognitive_deployment" "gpt_4o_chat" {
+  name                 = "gpt-4o-chat"
+  cognitive_account_id = azapi_resource.openai.id
+
+  model {
+    format  = "OpenAI"
+    name    = "gpt-4o"
+    version = "2024-05-13"
+  }
+
+  sku {
+    name     = "Standard"
+    capacity = 50 
+  }
+
+  depends_on = [
+    azapi_resource.openai
+  ]
+}
+
