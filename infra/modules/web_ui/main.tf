@@ -61,12 +61,7 @@ resource "azurerm_linux_web_app" "chat_web_ui_app" {
     application_stack {
        python_version = "3.9"
     }
-    #app_command_line = "python -m streamlit run app.py --server.port $PORT --server.address 0.0.0.0"
-
-    # For Streamlit, the startup command is often inferred, but you can be explicit:
-    # startup_command = "streamlit run app.py --server.port 8000 --server.address 0.0.0.0"
-    # App Service injects PORT env var, Streamlit might pick it up. Check logs if needed.
-    # Use port 8000 as App Service expects web apps to listen on 8000 or 8080 internally
+    app_command_line = "python -m streamlit run app.py --server.port $PORT --server.address 0.0.0.0"
     ftps_state        = "FtpsOnly" 
   }
 
