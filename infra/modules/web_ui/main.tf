@@ -15,6 +15,11 @@ terraform {
  }
 }
 
+resource "random_pet" "chat_web_ui_name" {
+  prefix    = "chat-web-ui" 
+  length    = 2
+}
+
 resource "azurerm_application_insights" "web_ui_insights" {
   name                = "web-ui-insights"
   location            = var.location
@@ -47,11 +52,11 @@ resource "azurerm_service_plan" "chat_ui_plan" {
   resource_group_name = var.resource_group_name
   location            = var.location
   os_type             = "Linux"
-  sku_name            = "P1v3" 
+  sku_name            = "P2v3" 
 }
 
 resource "azurerm_linux_web_app" "chat_web_ui_app" {
-  name                = "chat-web-ui"
+  name                = random_pet.chat_web_ui_name.id
   resource_group_name = var.resource_group_name
   location            = var.location
   service_plan_id     = azurerm_service_plan.chat_ui_plan.id

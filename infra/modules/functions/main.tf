@@ -56,7 +56,7 @@ resource "azurerm_service_plan" "function_plan" {
   location            = var.location
   resource_group_name = var.resource_group_name
   os_type             = "Linux"
-  sku_name            = "EP1"
+  sku_name            = "EP2"
 }
 
 resource "azurerm_application_insights" "function_insights" {

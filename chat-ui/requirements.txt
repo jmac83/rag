@@ -3,3 +3,5 @@ openai>=1.0.0
 azure-search-documents==11.4.0 
 azure-core
 azure-identity
+requests
+pandas

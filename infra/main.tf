@@ -96,7 +96,7 @@ module "function_app" {
   resource_group_name   = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
 
-  function_code_directory = "${path.module}/../index-function/"
+  function_code_directory = "${path.module}/../function-app/"
   storage_account_connection_string = module.storage_account.storage_account_primary_connection_string
   uploads_container_name = module.storage_account.uploads_container_name
   open_ai_api_key = module.open_ai.open_ai_api_key
