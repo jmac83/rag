@@ -1,5 +1,5 @@
 ![Quick Demo](assets/demo.gif)
 
 Architecture Diagram:
-![Architecture](assets/RAGDemoArchitecture.png)
+![Architecture](assets/RAGDemoArchitecture.svg)
 
