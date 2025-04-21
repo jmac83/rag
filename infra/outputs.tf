@@ -33,3 +33,12 @@ output "function_storage_account_connection_string" {
 output "chat_web_ui_url" {
   value = module.web_ui_app.chat_web_ui_url
 }
+
+output "function_app_url" {
+  value = module.function_app.function_app_url
+}
+
+output "function_app_key" {
+  value = module.function_app.function_app_key
+  sensitive = true
+}

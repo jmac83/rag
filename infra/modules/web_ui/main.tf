@@ -74,6 +74,8 @@ resource "azurerm_linux_web_app" "chat_web_ui_app" {
     "AZURE_SEARCH_API_URL" = var.ai_search_url
     "AZURE_SEARCH_API_KEY" = var.ai_search_key
     "WEBSITES_PORT"                       = "8000" 
+    "AZURE_FUNCTION_APP_URL" = var.function_app_url
+    "AZURE_FUNCTION_APP_KEY" = var.function_app_key
     
     "APP_ZIP_HASH"         = data.archive_file.web_ui_app_zip.output_base64sha256
     "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"

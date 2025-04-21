@@ -29,3 +29,11 @@ variable "ai_search_url" {
 variable "ai_search_key" {
   type        = string
 }
+
+variable "function_app_url" {
+  type        = string
+}
+
+variable "function_app_key" {
+  type        = string
+}

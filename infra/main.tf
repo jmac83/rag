@@ -112,21 +112,21 @@ module "function_app" {
 }
 
 module "web_ui_app" {
- source = "./modules/web_ui/"
- resource_group_name   = azurerm_resource_group.rg.name
- location            = azurerm_resource_group.rg.location
+  source = "./modules/web_ui/"
+  resource_group_name   = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
 
- web_ui_code_directory = "${path.module}/../chat-ui/"
- #storage_account_connection_string = module.storage_account.storage_account_primary_connection_string
- #uploads_container_name = module.storage_account.uploads_container_name
- open_ai_api_key = module.open_ai.open_ai_api_key
- open_ai_endpoint = module.open_ai.open_ai_endpoint
- ai_search_url = module.ai_search.search_api_url
- ai_search_key = module.ai_search.search_api_key
- log_analytics_workspace_id = module.monitor.log_analytics_workspace_id
+  web_ui_code_directory = "${path.module}/../chat-ui/"
+  open_ai_api_key = module.open_ai.open_ai_api_key
+  open_ai_endpoint = module.open_ai.open_ai_endpoint
+  ai_search_url = module.ai_search.search_api_url
+  ai_search_key = module.ai_search.search_api_key
+  log_analytics_workspace_id = module.monitor.log_analytics_workspace_id
+  function_app_url = module.function_app.function_app_url
+  function_app_key = module.function_app.function_app_key
 
- providers = {
-   azurerm = azurerm
-   random = random
- }
+  providers = {
+    azurerm = azurerm
+    random = random
+  }
 }

@@ -125,3 +125,8 @@ resource "null_resource" "function_app_deploy" {
   }
   depends_on = [azurerm_linux_function_app.index_function]
 }
+
+data "azurerm_function_app_host_keys" "host_keys" {
+  name                = azurerm_linux_function_app.index_function.name
+  resource_group_name = azurerm_linux_function_app.index_function.resource_group_name
+}
