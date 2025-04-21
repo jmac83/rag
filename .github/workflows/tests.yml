@@ -12,8 +12,8 @@ jobs:
           python-version: '3.11'
       - name: Install dependencies
         run: |
-          cd index-function
+          cd function-app
           pip install -r requirements-dev.txt
       - name: Run tests
         run: |
-          pytest index-function/tests/ --cov=index-function --cov-report=xml
+          pytest function-app/tests/ --cov=function-app --cov-report=xml
