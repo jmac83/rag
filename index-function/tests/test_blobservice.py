@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch, call
 from azure.core.exceptions import ResourceNotFoundError, ResourceExistsError
 from azure.storage.blob import BlobProperties 
 
-from blob_service import BlobStorageService
+from src.blobstorageservice import BlobStorageService
 
 
 # Fixture to create a mock BlobServiceClient
