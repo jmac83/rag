@@ -29,3 +29,7 @@ output "function_storage_account_connection_string" {
   value = module.function_app.function_storage_account_connection_string
   sensitive = true
 }
+
+output "chat_web_ui_url" {
+  value = module.web_ui_app.chat_web_ui_url
+}
