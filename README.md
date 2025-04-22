@@ -74,11 +74,11 @@ While the current implementation provides a functional RAG demonstration, potent
 
 *   **Agentic RAG / LLM Tool Use:** Implement function calling or tool use capabilities, allowing the LLM to potentially perform actions beyond simple retrieval (e.g., directly querying Azure Search with generated filters, calling other APIs) for more dynamic interactions.
 *   **Enhanced Security with Azure Key Vault:** Integrate Azure Key Vault to securely store and manage all secrets (API keys, connection strings) instead of relying solely on environment variables or Terraform outputs accessed via scripts.
-*   **Network Security with Private Endpoints:** Configure Private Endpoints for Azure services (Blob Storage, Functions, AI Search, OpenAI) to ensure communication occurs over the Azure private network backbonex
+*   **Network Security with Private Endpoints:** Configure Private Endpoints for Azure services (Blob Storage, Functions, AI Search, OpenAI) to ensure communication occurs over the Azure private network backbone.
 *   **User Authentication & Personalization:** Implement user accounts (e.g., using Azure AD B2C or another identity provider) to enable multi-user support and secure access.
-*   **Conversation History:** Persist chat history per user sessionx to allow for contextually aware follow-up questions within a conversation.
+*   **Conversation History:** Persist chat history per user session.
 *   **Shared Code Library:** Create a common Python library containing shared logic (e.g., data models, Azure service interaction clients) used by both the Azure Function and the Streamlit UI to reduce code duplication and improve maintainability.
-*   **UI Code Refactoring:** Refactor the Streamlit application code 
+*   **UI Code Refactoring:** Refactor the Streamlit application code.
 
 ## License
 
